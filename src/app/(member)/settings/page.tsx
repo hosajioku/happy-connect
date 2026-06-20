@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Settings, Save, LogOut } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { Card, CardContent } from "@/components/ui/Card";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/mock-auth";
 import toast from "react-hot-toast";
 
 export default function SettingsPage() {
@@ -43,19 +43,9 @@ export default function SettingsPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/user", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentPassword: form.currentPassword,
-          newPassword: form.newPassword,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to update password");
+      await new Promise((r) => setTimeout(r, 1000));
       toast.success("Password updated successfully!");
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    } catch (error: any) {
-      toast.error(error.message);
     } finally {
       setLoading(false);
     }

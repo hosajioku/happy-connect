@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/mock-auth";
 import { motion } from "framer-motion";
 import { Heart, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -24,12 +24,8 @@ export default function LoginPage() {
     }
     setLoading(true);
     try {
-      const result = await signIn("credentials", {
-        email: form.email,
-        password: form.password,
-        redirect: false,
-      });
-      if (result?.error) throw new Error("Invalid email or password");
+      await signIn();
+      await new Promise((r) => setTimeout(r, 1000));
       toast.success("Welcome back!");
       router.push("/dashboard");
       router.refresh();

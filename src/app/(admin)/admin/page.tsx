@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Users, CreditCard, Heart, Calendar, Shield, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { mockAdminStats } from "@/lib/mock-data";
 
 export default function AdminDashboardPage() {
   const { data: session } = useSession();
@@ -20,13 +21,8 @@ export default function AdminDashboardPage() {
       router.push("/dashboard");
       return;
     }
-    fetch("/api/admin/users")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.stats) setStats(data.stats);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setStats(mockAdminStats.stats);
+    setLoading(false);
   }, [session, user, router]);
 
   if (!session || user?.role !== "ADMIN") return null;

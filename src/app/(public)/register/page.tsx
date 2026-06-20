@@ -47,13 +47,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      await new Promise((r) => setTimeout(r, 1000));
       toast.success("Account created! Please log in.");
       router.push("/login");
     } catch (error: any) {

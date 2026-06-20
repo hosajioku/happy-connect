@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Video, Loader2, Heart, CheckCircle, XCircle, Crown } from "lucide-react";
@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import toast from "react-hot-toast";
+import { mockBookings } from "@/lib/mock-data";
 
 interface Booking {
   id: string;
@@ -36,13 +37,8 @@ export default function BookingsPage() {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/bookings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.bookings) setBookings(data.bookings);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setBookings(mockBookings);
+    setLoading(false);
   }, [session]);
 
   if (!session) {
@@ -58,19 +54,10 @@ export default function BookingsPage() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Failed to create booking");
+      await new Promise((r) => setTimeout(r, 1000));
       toast.success("Booking request submitted!");
       setShowModal(false);
       setForm({ preferredDate: "", preferredTime: "", notes: "" });
-      const updated = await fetch("/api/bookings").then((r) => r.json());
-      if (updated.bookings) setBookings(updated.bookings);
-    } catch (error: any) {
-      toast.error(error.message);
     } finally {
       setSubmitting(false);
     }

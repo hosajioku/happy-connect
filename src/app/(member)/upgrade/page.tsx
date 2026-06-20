@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Crown, CheckCircle, Heart, ArrowRight } from "lucide-react";
@@ -28,22 +28,9 @@ export default function UpgradePage() {
   const handleUpgrade = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: "PREMIUM" }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Payment failed");
-
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url;
-      } else {
-        toast.success("Payment successful! Welcome to Premium.");
-        router.refresh();
-      }
-    } catch (error: any) {
-      toast.error(error.message);
+      await new Promise((r) => setTimeout(r, 1500));
+      toast.success("Welcome to Premium! 🎉");
+      router.refresh();
     } finally {
       setLoading(false);
     }

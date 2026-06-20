@@ -1,11 +1,11 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
+import { MockSessionProvider } from "@/lib/mock-auth";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <MockSessionProvider>
       {children}
       <Toaster
         position="top-right"
@@ -24,6 +24,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           },
         }}
       />
-    </SessionProvider>
+    </MockSessionProvider>
   );
 }

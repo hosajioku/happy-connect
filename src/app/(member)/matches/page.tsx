@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, Heart, MapPin, Calendar, Users, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { mockMatches } from "@/lib/mock-data";
 import { getCompatibilityLabel } from "@/lib/matching";
 
 interface Match {
@@ -37,13 +38,8 @@ export default function MatchesPage() {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/matches")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.matches) setMatches(data.matches);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setMatches(mockMatches);
+    setLoading(false);
   }, [session]);
 
   if (!session) {

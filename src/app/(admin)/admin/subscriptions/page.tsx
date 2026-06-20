@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CreditCard, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { mockPayments } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import toast from "react-hot-toast";
@@ -20,28 +21,14 @@ export default function AdminSubscriptionsPage() {
   useEffect(() => {
     if (!session) return;
     if (user?.role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/subscriptions")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.payments) setPayments(data.payments);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setPayments(mockPayments);
+    setLoading(false);
   }, [session, user, router]);
 
   const approvePayment = async (id: string) => {
-    try {
-      const res = await fetch(`/api/admin/subscriptions`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId: id, status: "APPROVED" }),
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Payment approved");
-      setPayments(payments.map((p) => p.id === id ? { ...p, status: "APPROVED" } : p));
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    await new Promise((r) => setTimeout(r, 500));
+    toast.success("Payment approved");
+    setPayments(payments.map((p) => p.id === id ? { ...p, status: "APPROVED" } : p));
   };
 
   if (!session || user?.role !== "ADMIN") return null;

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Calendar, Loader2, Check, X, ExternalLink } from "lucide-react";
+import { mockBookings } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
@@ -25,46 +26,23 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     if (!session) return;
     if (user?.role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/bookings")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.bookings) setBookings(data.bookings);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setBookings(mockBookings.map((b) => ({ ...b, user: { name: "John Doe" } })));
+    setLoading(false);
   }, [session, user, router]);
 
   const confirmBooking = async () => {
     if (!meetingLink) { toast.error("Please enter a meeting link"); return; }
-    try {
-      const res = await fetch("/api/admin/bookings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId: selectedBooking.id, status: "CONFIRMED", meetingLink }),
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Booking confirmed!");
-      setBookings(bookings.map((b) => b.id === selectedBooking.id ? { ...b, status: "CONFIRMED", meetingLink } : b));
-      setShowModal(false);
-      setMeetingLink("");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    await new Promise((r) => setTimeout(r, 500));
+    toast.success("Booking confirmed!");
+    setBookings(bookings.map((b) => b.id === selectedBooking.id ? { ...b, status: "CONFIRMED", meetingLink } : b));
+    setShowModal(false);
+    setMeetingLink("");
   };
 
   const cancelBooking = async (id: string) => {
-    try {
-      const res = await fetch("/api/admin/bookings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId: id, status: "CANCELLED" }),
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Booking cancelled");
-      setBookings(bookings.map((b) => b.id === id ? { ...b, status: "CANCELLED" } : b));
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    await new Promise((r) => setTimeout(r, 500));
+    toast.success("Booking cancelled");
+    setBookings(bookings.map((b) => b.id === id ? { ...b, status: "CANCELLED" } : b));
   };
 
   if (!session || user?.role !== "ADMIN") return null;

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, Sparkles, Users, Calendar, ArrowRight, Bell, CreditCard, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import { mockUser } from "@/lib/mock-data";
 
 export default function DashboardPage() {
   const { data: session } = useSession();
@@ -23,19 +24,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/user")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data) {
-          setStats({
-            matches: data.matchesCount || 0,
-            notifications: data.notificationsCount || 0,
-            bookings: data.bookingsCount || 0,
-            membership: data.membership || "FREE",
-          });
-        }
-      })
-      .catch(console.error);
+    setStats({
+      matches: mockUser.matchesCount,
+      notifications: mockUser.notificationsCount,
+      bookings: mockUser.bookingsCount,
+      membership: mockUser.membership,
+    });
   }, [session]);
 
   if (!session) {

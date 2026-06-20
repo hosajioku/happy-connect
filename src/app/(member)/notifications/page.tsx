@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Bell, Heart, Loader2, CheckCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
+import { mockNotifications as mockData } from "@/lib/mock-data";
 
 interface Notification {
   id: string;
@@ -26,13 +27,8 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/notifications")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.notifications) setNotifications(data.notifications);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setNotifications(mockData);
+    setLoading(false);
   }, [session]);
 
   if (!session) {
@@ -41,12 +37,7 @@ export default function NotificationsPage() {
   }
 
   const markAllRead = async () => {
-    try {
-      await fetch("/api/notifications", { method: "PUT" });
-      setNotifications(notifications.map((n) => ({ ...n, read: true })));
-    } catch (error) {
-      console.error(error);
-    }
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
   };
 
   return (

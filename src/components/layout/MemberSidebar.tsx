@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, User, Heart, Sparkles, CreditCard, Calendar, Bell, Settings, LogOut,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/mock-auth";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

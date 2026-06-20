@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Heart, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { mockAdminUsers } from "@/lib/mock-data";
 import Button from "@/components/ui/Button";
 import toast from "react-hot-toast";
 
@@ -19,26 +20,21 @@ export default function AdminMatchmakingPage() {
   useEffect(() => {
     if (!session) return;
     if (user?.role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/matchmaking")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.users) setUsers(data.users);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setUsers(mockAdminUsers.map((u) => ({
+      id: u.id,
+      name: u.name,
+      gender: null,
+      country: null,
+      lookingFor: null,
+      religion: null,
+      membership: { plan: u.membership, status: "ACTIVE" },
+    })));
+    setLoading(false);
   }, [session, user, router]);
 
   const generateMatches = async () => {
-    try {
-      const res = await fetch("/api/admin/matchmaking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Matches generated for all users!");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    await new Promise((r) => setTimeout(r, 1000));
+    toast.success("Matches generated for all users!");
   };
 
   if (!session || user?.role !== "ADMIN") return null;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FileText, Save, Loader2 } from "lucide-react";
@@ -21,30 +21,23 @@ export default function AdminContentPage() {
   useEffect(() => {
     if (!session) return;
     if (user?.role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/content")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.content) setContent(data.content);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setContent({
+      "home-hero-title": "Find Your Perfect Match",
+      "home-hero-subtitle": "Connecting serious singles for meaningful relationships",
+      "pricing-free-desc": "Basic access to our platform",
+      "pricing-premium-desc": "Full access including private matchmaking",
+      "announcement": "Welcome to the new Happy Connect platform!",
+      "about-mission": "To help serious singles find lasting love.",
+      "about-vision": "A world where everyone finds their perfect match.",
+    });
+    setLoading(false);
   }, [session, user, router]);
 
   const handleSave = async () => {
     setSaving(true);
-    try {
-      const res = await fetch("/api/admin/content", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      if (!res.ok) throw new Error("Failed");
-      toast.success("Content updated!");
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setSaving(false);
-    }
+    await new Promise((r) => setTimeout(r, 500));
+    toast.success("Content updated!");
+    setSaving(false);
   };
 
   if (!session || user?.role !== "ADMIN") return null;

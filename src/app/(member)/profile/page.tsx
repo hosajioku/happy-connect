@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Save, User, Heart, Target, Camera } from "lucide-react";
+import { Save, User, Heart, Target } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { Card, CardContent } from "@/components/ui/Card";
 import toast from "react-hot-toast";
+import { mockUserProfile } from "@/lib/mock-data";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -26,34 +27,28 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/user")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data) {
-          setForm({
-            name: data.name || "",
-            phone: data.phone || "",
-            gender: data.gender || "",
-            dateOfBirth: data.dateOfBirth || "",
-            country: data.country || "",
-            state: data.state || "",
-            city: data.city || "",
-            occupation: data.occupation || "",
-            about: data.about || "",
-            lookingFor: data.lookingFor || "Serious Relationship",
-            hobbies: data.hobbies || "",
-            religion: data.religion || "",
-            willingToRelocate: data.willingToRelocate === true ? "Yes" : data.willingToRelocate === false ? "No" : "",
-            preferredAgeMin: data.preferredAgeMin?.toString() || "18",
-            preferredAgeMax: data.preferredAgeMax?.toString() || "99",
-            preferredLocation: data.preferredLocation || "",
-            relationshipGoal: data.relationshipGoal || "",
-            photo: data.photo || "",
-          });
-        }
-      })
-      .catch(console.error)
-      .finally(() => setFetching(false));
+    const d = mockUserProfile;
+    setForm({
+      name: d.name || "",
+      phone: d.phone || "",
+      gender: d.gender || "",
+      dateOfBirth: d.dateOfBirth || "",
+      country: d.country || "",
+      state: d.state || "",
+      city: d.city || "",
+      occupation: d.occupation || "",
+      about: d.about || "",
+      lookingFor: d.lookingFor || "Serious Relationship",
+      hobbies: d.hobbies || "",
+      religion: d.religion || "",
+      willingToRelocate: d.willingToRelocate === true ? "Yes" : d.willingToRelocate === false ? "No" : "",
+      preferredAgeMin: d.preferredAgeMin?.toString() || "18",
+      preferredAgeMax: d.preferredAgeMax?.toString() || "99",
+      preferredLocation: d.preferredLocation || "",
+      relationshipGoal: d.relationshipGoal || "",
+      photo: d.photo || "",
+    });
+    setFetching(false);
   }, [session]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -64,21 +59,8 @@ export default function ProfilePage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          willingToRelocate: form.willingToRelocate === "Yes" ? true : form.willingToRelocate === "No" ? false : null,
-          preferredAgeMin: parseInt(form.preferredAgeMin),
-          preferredAgeMax: parseInt(form.preferredAgeMax),
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to update profile");
+      await new Promise((r) => setTimeout(r, 1000));
       toast.success("Profile updated successfully!");
-      router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
     } finally {
       setLoading(false);
     }

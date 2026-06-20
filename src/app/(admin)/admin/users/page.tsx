@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/mock-auth";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Users, Search, Shield, Loader2, Trash2 } from "lucide-react";
+import { Users, Search, Loader2, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
 import toast from "react-hot-toast";
+import { mockAdminUsers } from "@/lib/mock-data";
 
 interface AdminUser {
   id: string;
@@ -33,25 +33,20 @@ export default function AdminUsersPage() {
   useEffect(() => {
     if (!session) return;
     if (user?.role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/users")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.users) setUsers(data.users);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setUsers(mockAdminUsers.map((u) => ({
+      ...u,
+      gender: null,
+      country: null,
+      membership: u.membership === "PREMIUM" ? { plan: "PREMIUM", status: "ACTIVE" } : null,
+    })));
+    setLoading(false);
   }, [session, user, router]);
 
   const deleteUser = async (id: string) => {
     if (!confirm("Delete this user?")) return;
-    try {
-      const res = await fetch(`/api/admin/users?id=${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      setUsers(users.filter((u) => u.id !== id));
-      toast.success("User deleted");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    await new Promise((r) => setTimeout(r, 500));
+    setUsers(users.filter((u) => u.id !== id));
+    toast.success("User deleted");
   };
 
   const filtered = users.filter((u) =>

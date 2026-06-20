@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "@/lib/mock-auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Menu, X, User, LogOut, Settings, Shield, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
